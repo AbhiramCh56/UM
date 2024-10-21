@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard - Sports Buddy</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      header {
+        background: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      form {
+        margin-bottom: 20px;
+      }
+      input[type="text"],
+      input[type="datetime-local"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        padding: 10px 15px;
+        background: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #218838;
+      }
+      #event-list div {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+      #event-list button {
+        background: #dc3545;
+        margin-top: 10px;
+      }
+      #event-list button:hover {
+        background: #c82333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>User Dashboard</h1>
+    </header>
+    <div class="container">
+      <h2>Add Event</h2>
+      <form id="add-event-form">
+        <input type="text" id="event-name" placeholder="Event Name" required />
+        <input
+          type="text"
+          id="event-location"
+          placeholder="Event Location"
+          required
+        />
+        <input type="datetime-local" id="event-time" required />
+        <button type="submit">Add Event</button>
+      </form>
+
+      <h2>Your Events</h2>
+      <div id="event-list"></div>
+
+      <button id="logout-button">Logout</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script type="module">
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyD2PlPYo4zwpt6N2tBm0Rkiu5o2MAMSgK4",
+        authDomain: "sportsbuddy-3f113.firebaseapp.com",
+        projectId: "sportsbuddy-3f113",
+        storageBucket: "sportsbuddy-3f113.appspot.com",
+        messagingSenderId: "636863135278",
+        appId: "1:636863135278:web:1c6f4f7c9cc43574c1e9bf",
+        measurementId: "G-DKNW7HXRQR",
+      };
+
+      // Import Firebase modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        addDoc,
+        getDocs,
+        deleteDoc,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      // User Authentication
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loadUserEvents(user.uid); // Load user-specific events
+        } else {
+          window.location.href = "index.html"; // Redirect to login if not authenticated
+        }
+      });
+
+      // Add Event
+      const addEventForm = document.getElementById("add-event-form");
+      addEventForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userId = auth.currentUser.uid; // Get current user's UID
+        const eventName = document.getElementById("event-name").value;
+        const eventLocation = document.getElementById("event-location").value;
+        const eventTime = document.getElementById("event-time").value;
+
+        console.log("Adding event:", {
+          userId,
+          eventName,
+          eventLocation,
+          eventTime,
+        });
+
+        // Add event to Firestore under the user's sub-collection
+        try {
+          await addDoc(collection(db, "users", userId, "events"), {
+            name: eventName,
+            location: eventLocation,
+            time: eventTime,
+          });
+          console.log("Event added successfully");
+          alert("Event added successfully");
+          addEventForm.reset(); // Clear the form
+          loadUserEvents(userId); // Refresh the event list
+        } catch (error) {
+          console.error("Error adding event:", error.message);
+          alert("Error adding event: " + error.message);
+        }
+      });
+
+      // Load User Events
+      async function loadUserEvents(userId) {
+        const eventList = document.getElementById("event-list");
+        eventList.innerHTML = ""; // Clear the current list
+        try {
+          const querySnapshot = await getDocs(
+            collection(db, "users", userId, "events")
+          );
+          querySnapshot.forEach((doc) => {
+            const eventData = doc.data();
+            const eventElement = document.createElement("div");
+            eventElement.innerHTML = `
+                      <strong>${eventData.name}</strong><br>
+                      Location: ${eventData.location}<br>
+                      Time: ${new Date(eventData.time).toLocaleString()}<br>
+                      <button onclick="deleteEvent('${doc.id}')">Delete</button>
+                  `;
+            eventList.appendChild(eventElement);
+          });
+        } catch (error) {
+          console.error("Error fetching events:", error.message);
+        }
+      }
+
+      // Delete Event
+      async function deleteEvent(eventId) {
+        const userId = auth.currentUser.uid; // Get current user's UID
+        try {
+          await deleteDoc(doc(db, "users", userId, "events", eventId));
+          console.log("Event deleted successfully");
+          alert("Event deleted successfully");
+          loadUserEvents(userId); // Refresh the event list
+        } catch (error) {
+          console.error("Error deleting event:", error.message);
+          alert("Error deleting event: " + error.message);
+        }
+      }
+
+      // Logout
+      document.getElementById("logout-button").addEventListener("click", () => {
+        signOut(auth)
+          .then(() => {
+            console.log("User logged out");
+            window.location.href = "index.html"; // Redirect to index page
+          })
+          .catch((error) => {
+            console.error("Error logging out:", error.message);
+            alert("Error logging out: " + error.message);
+          });
+      });
+    </script>
+  </body>
+</html>

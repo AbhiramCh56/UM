@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Sports Buddy</title>
+  </head>
+  <body>
+    <h1>Welcome to the Admin Dashboard!</h1>
+    <button id="admin-logout-button">Logout</button>
+
+    <script type="module">
+      import {
+        getAuth,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+      const auth = getAuth();
+
+      // Admin Logout
+      const adminLogoutButton = document.getElementById("admin-logout-button");
+      if (adminLogoutButton) {
+        adminLogoutButton.addEventListener("click", () => {
+          signOut(auth)
+            .then(() => {
+              console.log("Admin logged out");
+              alert("Logout successful!");
+              window.location.href = "admin-login.html"; // Redirect to admin login page
+            })
+            .catch((error) => {
+              console.error("Error during admin logout:", error.message);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports Buddy - Welcome</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Welcome to Sports Buddy</h1>
+    <button id="register-button">Register</button>
+    <button id="user-login-button">User Login</button>
+    <button id="admin-login-button">Admin Login</button>
+
+    <script>
+      document.getElementById("register-button").onclick = function () {
+        window.location.href = "register.html"; // Redirect to the registration page
+      };
+
+      document.getElementById("user-login-button").onclick = function () {
+        window.location.href = "login.html"; // Redirect to the user login page
+      };
+
+      document.getElementById("admin-login-button").onclick = function () {
+        window.location.href = "admin-login.html"; // Redirect to the admin login page
+      };
+    </script>
+  </body>
+</html>

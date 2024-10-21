@@ -1,0 +1,23 @@
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2PlPYo4zwpt6N2tBm0Rkiu5o2MAMSgK4",
+    authDomain: "sportsbuddy-3f113.firebaseapp.com",
+    projectId: "sportsbuddy-3f113",
+    storageBucket: "sportsbuddy-3f113.appspot.com",
+    messagingSenderId: "636863135278",
+    appId: "1:636863135278:web:1c6f4f7c9cc43574c1e9bf",
+    measurementId: "G-DKNW7HXRQR"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>

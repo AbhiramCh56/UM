@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sports Buddy Application</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module">
+      // Import Firebase modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyD2PlPYo4zwpt6N2tBm0Rkiu5o2MAMSgK4",
+        authDomain: "sportsbuddy-3f113.firebaseapp.com",
+        projectId: "sportsbuddy-3f113",
+        storageBucket: "sportsbuddy-3f113.appspot.com",
+        messagingSenderId: "636863135278",
+        appId: "1:636863135278:web:1c6f4f7c9cc43574c1e9bf",
+        measurementId: "G-DKNW7HXRQR",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // User Registration
+      const registerForm = document.getElementById("register-form");
+      if (registerForm) {
+        registerForm.addEventListener("submit", (e) => {
+          e.preventDefault(); // Prevent the default form submission
+          const email = document.getElementById("register-email").value; // Get email input value
+          const password = document.getElementById("register-password").value; // Get password input value
+
+          // Create a new user with email and password
+          createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              // Registration successful
+              console.log("User registered:", userCredential.user);
+              alert("Registration successful!"); // Optionally alert the user
+              // Redirect to login or another page
+              window.location.href = "login.html";
+            })
+            .catch((error) => {
+              // Handle errors here
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              console.error("Error during registration:", errorMessage);
+              alert("Error: " + errorMessage); // Alert the user about the error
+            });
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Sports Buddy Application</h1>
+
+    <!-- Registration Form -->
+    <form id="register-form">
+      <input type="email" id="register-email" placeholder="Email" required />
+      <input
+        type="password"
+        id="register-password"
+        placeholder="Password"
+        required
+      />
+      <button type="submit">Register</button>
+    </form>
+  </body>
+</html>

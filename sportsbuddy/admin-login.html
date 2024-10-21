@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Sports Buddy</title>
+  </head>
+  <body>
+    <h1>Admin Login to Sports Buddy</h1>
+
+    <!-- Admin Login Form -->
+    <form id="admin-login-form">
+      <input type="email" id="admin-login-email" placeholder="Email" required />
+      <input
+        type="password"
+        id="admin-login-password"
+        placeholder="Password"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyD2PlPYo4zwpt6N2tBm0Rkiu5o2MAMSgK4",
+        authDomain: "sportsbuddy-3f113.firebaseapp.com",
+        projectId: "sportsbuddy-3f113",
+        storageBucket: "sportsbuddy-3f113.appspot.com",
+        messagingSenderId: "636863135278",
+        appId: "1:636863135278:web:1c6f4f7c9cc43574c1e9bf",
+        measurementId: "G-DKNW7HXRQR",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      const adminLoginForm = document.getElementById("admin-login-form");
+      if (adminLoginForm) {
+        adminLoginForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const email = document.getElementById("admin-login-email").value;
+          const password = document.getElementById(
+            "admin-login-password"
+          ).value;
+
+          signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              console.log("Admin logged in:", userCredential.user);
+              window.location.href = "admin-dashboard.html"; // Redirect to admin dashboard
+            })
+            .catch((error) => {
+              const errorMessage = error.message;
+              console.error("Error during admin login:", errorMessage);
+              alert("Error: " + errorMessage);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
